@@ -67,12 +67,16 @@ export default async function transcript(pi: ExtensionAPI): Promise<void> {
           description: "Choose icons or text for toolbar, panel and copy controls.",
           currentValue: preferences.buttonStyle, values: ["icons", "text"],
         }, {
+          id: "groupTools", label: "Group Activity tools",
+          description: "Turn off to show original tool cards and linked panels without compact groups or nested-call trees.",
+          currentValue: preferences.groupTools ? "on" : "off", values: ["on", "off"],
+        }, {
           id: "compactTools", label: "Compact Activity tools",
-          description: "Group adjacent tools and expand individual calls inline. Full text stays searchable and copyable.",
+          description: "Compact grouped tools. Applies only when Group Activity tools is on.",
           currentValue: preferences.compactTools ? "on" : "off", values: ["on", "off"],
         }, {
           id: "streamTools", label: "Stream latest tools",
-          description: "In compact Activity, show new tool calls in full and collapse them after the delay.",
+          description: "With grouping and compact tools on, show new calls in full and collapse them after the delay.",
           currentValue: preferences.streamTools ? "on" : "off", values: ["on", "off"],
         }, {
           id: "streamDelay", label: "Collapse delay",
@@ -82,10 +86,11 @@ export default async function transcript(pi: ExtensionAPI): Promise<void> {
           id: "height", label: "Conversation height",
           description: "Auto grows to half the history area. Drag sets a manual maximum.",
           currentValue: preferences.chatHeight === null ? "auto" : "manual", values: ["auto", "manual"],
-        }], 7, getSettingsListTheme(), (id, value) => {
+        }], 8, getSettingsListTheme(), (id, value) => {
           if (id === "timestamps") layout?.setTimestamps(value === "on");
           else if (id === "copyButtons") layout?.setCopyButtons(value === "on");
           else if (id === "buttonStyle") layout?.setButtonStyle(value === "text" ? "text" : "icons");
+          else if (id === "groupTools") layout?.setGroupTools(value === "on");
           else if (id === "compactTools") layout?.setCompactTools(value === "on");
           else if (id === "streamTools") layout?.setStreamTools(value === "on");
           else if (id === "streamDelay") layout?.setStreamDelay(Number.parseInt(value, 10));

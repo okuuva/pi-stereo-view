@@ -317,7 +317,7 @@ export class TranscriptLayout {
     const timestampGutter = (): number => scroll.scrollbar === "auto" ? 1 : 0;
     const showTimestamps = (): boolean => this.preferences.showTimestamps;
     const showCopyButtons = (): boolean => this.preferences.showCopyButtons;
-    const index = new NativeContentIndex(document, this.nested);
+    const index = new NativeContentIndex(document, this.nested, () => this.preferences.groupTools);
     const activityDocument = new NativeDocument(document, "activity", this.timestamps, this.theme, timestampGutter, showTimestamps,
       () => this.activate("activity"), false, index, this.copy, showCopyButtons, () => this.preferences.compactTools, this.getTools,
       () => { if (this.activity) this.activity.scrollTo(this.activity.scrollTop, { disableFollow: true }); }, () => this.preferences.buttonStyle, {
@@ -469,7 +469,7 @@ export class TranscriptLayout {
           () => {
             this.activate("activity");
             this.setCompactTools(!this.preferences.compactTools);
-          }, () => true, () => palette().fill,
+          }, () => this.preferences.groupTools, () => palette().fill,
         ), basis: 6, minSize: 5, shrink: 1 }] : []),
         { component: this.button(() => this.preferences.buttonStyle === "icons" ? "⌕" : "Find", () => {
           this.activate(target);
@@ -741,6 +741,14 @@ export class TranscriptLayout {
   /** Change the presentation of toolbar, header and copy controls. */
   setButtonStyle(style: "icons" | "text"): void {
     this.preferences.buttonStyle = style;
+    this.changed();
+  }
+
+  /** Use original tool cards and linked panels when grouping is disabled. */
+  setGroupTools(group: boolean): void {
+    if (this.preferences.groupTools === group) return;
+    this.closeSearch(false);
+    this.preferences.groupTools = group;
     this.changed();
   }
 

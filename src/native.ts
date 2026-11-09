@@ -285,7 +285,7 @@ export class NativeDocument extends Container {
     let stamped = this.stamped.get(routed);
     if (!stamped) {
       stamped = new CompactMessage(routed, () => this.timestamps.label(this.clockOwners.get(component) ?? component),
-        this.theme, this.timestampGutter, () => this.showTimestamps() && !(this.pane === "activity" && this.compactTools() && entry.kind === "tool" && !this.live(entry.owner)),
+        this.theme, this.timestampGutter, () => this.showTimestamps() && !(this.pane === "activity" && this.index.groupTools() && this.compactTools() && entry.kind === "tool" && !this.live(entry.owner)),
         this.copy ? () => this.copyBlock(component) : undefined, this.showCopy, this.buttonStyle);
       this.stamped.set(routed, stamped);
     }
@@ -314,7 +314,7 @@ export class NativeDocument extends Container {
     let row = 0;
     let visibleBlock = false;
     let toolRun = false;
-    const compactTools = this.pane === "activity" && this.compactTools();
+    const compactTools = this.pane === "activity" && this.index.groupTools() && this.compactTools();
     this.present = toolPresentations(compactTools ? this.getTools() : []);
     this.compactActive = compactTools && this.streaming?.enabled() === true;
     if (this.compactActive) this.streamer!.observe(this.index.entries());
@@ -341,7 +341,7 @@ export class NativeDocument extends Container {
     this.searchTool = searched?.owner;
     const entries = this.index.entries(this.pane);
     const trees = new Map<Component, NestedTree>();
-    if (this.pane === "activity") for (const entry of entries) {
+    if (this.pane === "activity" && this.index.groupTools()) for (const entry of entries) {
       if (!entry.tool) continue;
       const id = Reflect.get(entry.source, "toolCallId") as string | undefined;
       if (!id || (!this.index.nested.entries(id).length && !this.index.nested.isIncomplete(id))) continue;
